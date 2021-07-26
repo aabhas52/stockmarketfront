@@ -12,7 +12,6 @@ class ShowIPO extends Component {
             company: null,
             companyList: null
         }
-        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleCompany = this.handleCompany.bind(this);
     }
@@ -29,7 +28,6 @@ class ShowIPO extends Component {
             if (response.ok) {
                 response.json().then(json => {
                     this.setState({ ipo: json, allIpos: null });
-                    // console.log(json);
                 });
             }
         });
@@ -52,10 +50,6 @@ class ShowIPO extends Component {
         this.setState({ company: event.value });
     }
 
-    handleChange(event) {
-        this.setState({ [event.target.id]: event.target.value });
-    }
-
     handleSubmit(event) {
         event.preventDefault();
         fetch("http://localhost:8080/companyIpo/" + this.state.company, {
@@ -63,6 +57,12 @@ class ShowIPO extends Component {
             mode: 'cors',
             headers: {
                 'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                response.json().then(json => {
+                    this.setState({ ipo: json, allIpos: null });
+                });
             }
         });
     }

@@ -52,7 +52,6 @@ class Login extends Component {
             }
             else {
                 response.text().then(message => {
-                    // console.log(message);
                     this.setState({
                         error: message
                     });
@@ -75,6 +74,7 @@ class Login extends Component {
                     <input type="submit" value="Login" className="btn btn-primary"/>
                 </div>
             </form>
+            <br/><br/>
             <Link to="/newUser">Create new user</Link>
         </div>
     }

@@ -61,7 +61,7 @@ class CompanyVsSector extends Component {
                 response.json().then(json => {
                     let list = [];
                     json.map((company, _key) => (
-                        list.push({ "label": company['companyName'], "value": company['sectorName'] })
+                        list.push({ "label": company['companyName'], "value": company['companyName'] })
                     ));
                     this.setState({ companyList: list });
                 });
@@ -112,25 +112,6 @@ class CompanyVsSector extends Component {
             "start": this.state.start,
             "end": this.state.end
         };
-        fetch("http://localhost:8080/sectorPrices", {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(SectorJson)
-        }).then(response => {
-            if (response.ok) {
-                response.json().then(json => {
-                    Object.entries(json).forEach((entry, _key) => (
-                        this.setState({
-                            category: [...this.state.category, { label: entry[0] }],
-                            pricedata1: [...this.state.pricedata1, { value: entry[1] }]
-                        })
-                    ));
-                })
-            }
-        });
         fetch("http://localhost:8080/sectorPrices", {
             method: 'POST',
             mode: 'cors',

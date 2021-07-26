@@ -29,7 +29,6 @@ class NewUser extends Component{
             "email": this.state.email,
             "phone": this.state.phone
         };
-        // console.log(UserJson);
         fetch("http://localhost:8080/setuserapi", {
             method: 'POST',
             mode: 'cors',

@@ -75,7 +75,6 @@ class AddIPO extends Component {
             "date": this.state.date,
             "time": this.state.time
         };
-        // console.log(IPOJson);
         fetch("http://localhost:8080/editIpo", {
             method: 'POST',
             mode: 'cors',

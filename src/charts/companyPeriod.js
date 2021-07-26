@@ -19,14 +19,12 @@ import FetchCompany from '../components/fetches/fetchCompany';
 // Step 6 - Adding the chart and theme as dependency to the core fusioncharts
 ReactFC.fcRoot(FusionCharts, Column2D, FusionTheme);
 
-
 class CompanyPeriod extends Component {
 
     constructor() {
         super();
         this.state = {
             chartData: [],
-            chartConfigs: {},
             companyList: null,
             company: null,
             start: null,
@@ -42,9 +40,8 @@ class CompanyPeriod extends Component {
         call.then(response => {
             if (response.ok) {
                 response.json().then(json => {
-                    // console.log(json);
                     let list = [];
-                    json.map((company, key) => (
+                    json.map((company, _key) => (
                         list.push({ "label": company['companyName'], "value": company['companyName'] })
                     ));
                     this.setState({ companyList: list });
@@ -68,9 +65,6 @@ class CompanyPeriod extends Component {
             "start": this.state.start,
             "end": this.state.end
         };
-        const comp = this.state.company;
-        const startDate = this.state.start;
-        const endDate = this.state.end;
         fetch("http://localhost:8080/findPricesBetweenDates", {
             method: 'POST',
             mode: 'cors',
@@ -82,27 +76,9 @@ class CompanyPeriod extends Component {
             if (response.ok) {
                 response.json().then(json => {
                     let pricedata = [];
-                    json.map((price, key) => (
-                        pricedata.push({ label: price['date'], value: price['currentPrice'] })
+                    Object.entries(json).forEach((entry, _key) => (
+                          pricedata = [...pricedata, { label:entry[0], value: entry[1] }]
                     ));
-                    this.setState({chartConfigs: {
-                        type: "column2d", // The chart type
-                        width: "700", // Width of the chart
-                        height: "400", // Height of the chart
-                        dataFormat: "json", // Data type
-                        dataSource: {
-                            // Chart Configuration
-                            chart: {
-                                caption: comp + " Prices between "+ startDate + " and " + endDate,    //Set the chart caption
-                                subCaption: "",             //Set the chart subcaption
-                                xAxisName: "Time",           //Set the x-axis name
-                                yAxisName: "Prices (in INR)",  //Set the y-axis name
-                                theme: "fusion"                 //Set the theme for your chart
-                            },
-                            // Chart Data - from step 2
-                            data: pricedata
-                        }
-                    }});
                     this.setState({ chartData: pricedata });
                 })
             }
@@ -110,8 +86,8 @@ class CompanyPeriod extends Component {
     }
 
     render() {
-        if (this.state.chartData.length === 0 && this.state.companyList != null) {
-            return <form onSubmit={this.handleSubmit} className="col-sm-4">
+        const formElement = (
+            <form onSubmit={this.handleSubmit} className="col-sm-4">
                 <Select
                     options={this.state.companyList}
                     placeholder="Select a company"
@@ -130,10 +106,33 @@ class CompanyPeriod extends Component {
                     <input type="submit" value="Submit query" className="btn btn-primary"/>
                 </div>
             </form>
+        );
+        if (this.state.chartData.length === 0 && this.state.companyList != null) {
+            return formElement;
         }
         else if(this.state.chartData.length !== 0){
-            const configs = (this.state.chartConfigs);
-            return (<ReactFC {...configs} />);
+            const configs = {
+                type: "column2d", // The chart type
+                width: "700", // Width of the chart
+                height: "400", // Height of the chart
+                dataFormat: "json", // Data type
+                dataSource: {
+                    // Chart Configuration
+                    chart: {
+                        caption: this.state.company + " Prices between "+ this.state.start + " and " + this.state.end,    //Set the chart caption
+                        subCaption: "",             //Set the chart subcaption
+                        xAxisName: "Time",           //Set the x-axis name
+                        yAxisName: "Prices (in INR)",  //Set the y-axis name
+                        theme: "fusion"                 //Set the theme for your chart
+                    },
+                    // Chart Data - from step 2
+                    data: this.state.chartData
+                }
+            }
+            return <div>
+                {formElement}
+                <ReactFC {...configs} />
+            </div>;
         }
         else{
             return <div>In progress</div>
