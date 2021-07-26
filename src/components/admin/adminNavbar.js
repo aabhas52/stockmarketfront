@@ -7,10 +7,12 @@ import AddIPO from "./addIPO";
 import AddStockExchange from "./addStockExchange";
 import AddCompany from "./addCompany";
 import AddMapping from "./addMapping";
+import { Navbar, NavItem } from "react-bootstrap";
+import ShowSectors from "../user/showSectors";
 
 class AdminNavbar extends Component {
 
-    constructor(){
+    constructor() {
         super();
         this.logout = this.logout.bind(this);
     }
@@ -19,33 +21,36 @@ class AdminNavbar extends Component {
         event.preventDefault();
         window.sessionStorage.removeItem("role");
         window.location.reload();
-        window.location.assign("/"); 
+        window.location.assign("/");
     }
 
     render() {
         return <div>
-            <nav className="navbar justify-content-end">
-                <button className="btn btn-primary" onClick={this.logout}>
-                    Logout
-                </button>
-            </nav>
-            <nav className="navbar navbark-dark">
-                <div>
+            <Navbar bg="dark" expand="lg" className="nav-tabs">
+                <NavItem className="mx-3">
                     <Link to="/admin/importData">Import Data</Link>
-                </div>
-                <div>
+                </NavItem>
+                <NavItem className="mx-3">
                     <Link to="/admin/companies">Manage Companies</Link>
-                </div>
-                <div>
+                </NavItem>
+                <NavItem className="mx-3">
                     <Link to="/admin/exchanges">Manage Exchanges</Link>
-                </div>
-                <div>
+                </NavItem>
+                <NavItem className="mx-3">
                     <Link to="/admin/updateIPO">Update IPO Details</Link>
-                </div>
-                <div>
+                </NavItem>
+                <NavItem className="mx-3">
                     <Link to="/admin/mappings">Add Company Codes</Link>
-                </div>
-            </nav>
+                </NavItem>
+                <NavItem className="mx-3">
+                    <Link to="/admin/sectors">View Sectors</Link>
+                </NavItem>
+                <NavItem className="ms-auto">
+                    <button className="btn btn-primary" onClick={this.logout}>
+                        Logout
+                    </button>
+                </NavItem>
+            </Navbar>
             <Switch>
                 <Route exact path="/admin/importData">
                     <ExcelUpload />
@@ -67,6 +72,9 @@ class AdminNavbar extends Component {
                 </Route>
                 <Route exact path="/admin/mappings">
                     <AddMapping />
+                </Route>
+                <Route exact path="/admin/sectors">
+                    <ShowSectors />
                 </Route>
             </Switch>
         </div>

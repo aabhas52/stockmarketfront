@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link, Route, Switch } from "react-router-dom";
-import UserNavbar from "./userNavbar";
-import AdminNavbar from "./adminNavbar";
+import AdminNavbar from "./admin/adminNavbar";
+import UserNavbar from "./user/userNavbar";
 import { Redirect } from "react-router";
 import NewUser from "./newUser";
 
@@ -43,7 +43,6 @@ class Login extends Component {
         }).then(response => {
             if (response.ok) {
                 response.text().then(userRole => {
-                    // console.log(userRole);
                     this.setState({
                         role: userRole,
                         login: true
@@ -73,7 +72,7 @@ class Login extends Component {
                     <input type="password" onChange={this.handleChange} className="form-control" placeholder="Password" id="password" required />
                 </div>
                 <div className="input-group-mb-3">
-                    <input type="submit" />
+                    <input type="submit" value="Login" className="btn btn-primary"/>
                 </div>
             </form>
             <Link to="/newUser">Create new user</Link>

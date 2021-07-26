@@ -8,7 +8,8 @@ class NewUser extends Component{
             username: null,
             password: null,
             email: null,
-            phone: null
+            phone: null,
+            message: null
         }
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -38,10 +39,10 @@ class NewUser extends Component{
             body: JSON.stringify(UserJson)
         }).then(response => {
             if(response.ok){
-                alert('New user added');
+                this.setState({message: "New user created!"})
             }
             else{
-                alert('New user cannot be added');
+                this.setState({message: "New user could not be created."})
             }
         });
     }
@@ -61,8 +62,10 @@ class NewUser extends Component{
                 <input type="tel" pattern="[0-9]{10}" onChange={this.onChange} className="form-control" placeholder="Phone" id="phone" required/>
             </div>
             <div className="input-group-mb-3">
-                <input type="submit"/>
+                <input type="submit" value="Create user" className="btn btn-primary"/>
             </div>
+            <br/><br/>
+            {this.state.message}
         </form>
     }
 

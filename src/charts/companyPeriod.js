@@ -14,46 +14,11 @@ import Column2D from "fusioncharts/fusioncharts.charts";
 import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
 import 'react-dropdown/style.css';
 import Select from 'react-select';
+import FetchCompany from '../components/fetches/fetchCompany';
 
 // Step 6 - Adding the chart and theme as dependency to the core fusioncharts
 ReactFC.fcRoot(FusionCharts, Column2D, FusionTheme);
 
-// Preparing the chart data
-// const chartData = [
-//     {
-//         label: "Venezuela",
-//         value: "290"
-//     },
-//     {
-//         label: "Saudi",
-//         value: "260"
-//     },
-//     {
-//         label: "Canada",
-//         value: "180"
-//     },
-//     {
-//         label: "Iran",
-//         value: "140"
-//     },
-//     {
-//         label: "Russia",
-//         value: "115"
-//     },
-//     {
-//         label: "UAE",
-//         value: "100"
-//     },
-//     {
-//         label: "US",
-//         value: "30"
-//     },
-//     {
-//         label: "China",
-//         value: "30"
-//     }
-// ];
-// console.log(chartData);
 
 class CompanyPeriod extends Component {
 
@@ -61,25 +26,7 @@ class CompanyPeriod extends Component {
         super();
         this.state = {
             chartData: [],
-            chartConfigs: {
-                type: "column2d", // The chart type
-                width: "700", // Width of the chart
-                height: "400", // Height of the chart
-                dataFormat: "json", // Data type
-                dataSource: {
-                    // Chart Configuration
-                    chart: {
-                        caption: "Company Prices",    //Set the chart caption
-                        subCaption: "",             //Set the chart subcaption
-                        xAxisName: "Time",           //Set the x-axis name
-                        yAxisName: "Prices (in INR)",  //Set the y-axis name
-                        numberSuffix: "K",
-                        theme: "fusion"                 //Set the theme for your chart
-                    },
-                    // Chart Data - from step 2
-                    data: null
-                }
-            },
+            chartConfigs: {},
             companyList: null,
             company: null,
             start: null,
@@ -91,13 +38,8 @@ class CompanyPeriod extends Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:8080/allCompanies', {
-            mode: 'cors',
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-            },
-        }).then(response => {
+        const call = FetchCompany();
+        call.then(response => {
             if (response.ok) {
                 response.json().then(json => {
                     // console.log(json);
@@ -126,6 +68,9 @@ class CompanyPeriod extends Component {
             "start": this.state.start,
             "end": this.state.end
         };
+        const comp = this.state.company;
+        const startDate = this.state.start;
+        const endDate = this.state.end;
         fetch("http://localhost:8080/findPricesBetweenDates", {
             method: 'POST',
             mode: 'cors',
@@ -136,14 +81,29 @@ class CompanyPeriod extends Component {
         }).then(response => {
             if (response.ok) {
                 response.json().then(json => {
-                    let data = [];
+                    let pricedata = [];
                     json.map((price, key) => (
-                        data.push({ label: price['date'], value: price['currentPrice']+'' })
+                        pricedata.push({ label: price['date'], value: price['currentPrice'] })
                     ));
-                    this.setState({ chartData: data });
-                    const configs = this.state.chartConfigs;
-                    configs.dataSource.data = data;
-                    this.setState({ chartConfigs: configs });
+                    this.setState({chartConfigs: {
+                        type: "column2d", // The chart type
+                        width: "700", // Width of the chart
+                        height: "400", // Height of the chart
+                        dataFormat: "json", // Data type
+                        dataSource: {
+                            // Chart Configuration
+                            chart: {
+                                caption: comp + " Prices between "+ startDate + " and " + endDate,    //Set the chart caption
+                                subCaption: "",             //Set the chart subcaption
+                                xAxisName: "Time",           //Set the x-axis name
+                                yAxisName: "Prices (in INR)",  //Set the y-axis name
+                                theme: "fusion"                 //Set the theme for your chart
+                            },
+                            // Chart Data - from step 2
+                            data: pricedata
+                        }
+                    }});
+                    this.setState({ chartData: pricedata });
                 })
             }
         });
@@ -151,11 +111,11 @@ class CompanyPeriod extends Component {
 
     render() {
         if (this.state.chartData.length === 0 && this.state.companyList != null) {
-            return <form onSubmit={this.handleSubmit}>
+            return <form onSubmit={this.handleSubmit} className="col-sm-4">
                 <Select
                     options={this.state.companyList}
                     placeholder="Select a company"
-                    className="col-sm-4 mb-3"
+                    className="mb-3"
                     onChange={this.handleCompany}
                 ></Select>
                 <div className="row">
@@ -167,7 +127,7 @@ class CompanyPeriod extends Component {
                     </div>
                 </div>
                 <div className="input-group-mb-3">
-                    <input type="submit" />
+                    <input type="submit" value="Submit query" className="btn btn-primary"/>
                 </div>
             </form>
         }

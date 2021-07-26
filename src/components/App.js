@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { Redirect, Route } from "react-router-dom";
 import Login from "./login";
-import AdminNavbar from "./adminNavbar";
-import UserNavbar from "./userNavbar";
-
+import AdminNavbar from "./admin/adminNavbar";
+import UserNavbar from "./user/userNavbar";
 class App extends Component {
 
     render() {

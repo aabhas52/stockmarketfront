@@ -6,7 +6,8 @@ class ExcelUpload extends Component{
     constructor(){
         super();
         this.state = {
-            selectedFile: null
+            selectedFile: null,
+            result: null
         };
     }
     
@@ -14,11 +15,8 @@ class ExcelUpload extends Component{
         this.setState({selectedFile: event.target.files[0]})
     };
 
-    onFileUpload = () => {
-        // console.log(this.state.selectedFile);
-        
+    onFileUpload = () => {  
         xlsxParser.onFileSelection(this.state.selectedFile).then(data => {
-                // console.log(data);
                 Object.entries(data).forEach(
                     ([_sheet, pricesMap]) => {
                         var Prices = [];
@@ -30,10 +28,8 @@ class ExcelUpload extends Component{
                                 "date": price['Date '],
                                 "time": price['Time']
                             };
-                            // console.log(price);
                             Prices.push(priceJson);
                         });
-                        // console.log(sheet);
                         fetch("http://localhost:8080/addStockPriceByCode", {
                             method: 'POST',
                             mode: 'cors',
@@ -41,8 +37,29 @@ class ExcelUpload extends Component{
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify(Prices)
-                        }).then(data => {console.log(data)});
-                        // console.log(Prices);
+                        }).then(response => {
+                            if(response.ok){
+                                response.json().then(json => {
+                                    this.setState({
+                                        result: <div>
+                                            Successful Upload! <br/><br/>
+                                            Company: {json.company} <br/>
+                                            Stock Exchange: {json.exchange} <br/>
+                                            Records Updated: {json.message}
+                                        </div>
+                                    });
+                                })
+                            }
+                            else{
+                                response.json().then(message => {
+                                    this.setState({
+                                        result: <h4 className="text-danger">
+                                            {message.error}
+                                        </h4>
+                                    })
+                                })
+                            }
+                        });
                     }
                 );
             });
@@ -52,6 +69,7 @@ class ExcelUpload extends Component{
         return <div className="col-sm-12">
             <input type="file" onChange={this.onFileChange}></input>
             <button className="btn btn-dark" onClick={this.onFileUpload}>Upload</button>
+            {this.state.result}
         </div>
     }
 }

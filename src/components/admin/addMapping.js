@@ -1,8 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Select from 'react-select';
+import FetchCompany from "../fetches/fetchCompany";
+
 
 function AddMapping() {
     const [inputList, setInputList] = useState([{ exchange: "", code: "" }]);
     const [company, setCompany] = useState("");
+    const [companyList, setCompanyList] = useState([]);
+    const [message, setMessage] = useState('');
+
+    useEffect(() => {
+        const call = FetchCompany();
+        call.then(response => {
+            if (response.ok) {
+                response.json().then(json => {
+                    let list = [];
+                    json.map((company, _key) => (
+                        list.push({ "label": company['companyName'], "value": company['companyName'] })
+                    ));
+                    setCompanyList(list);
+                });
+            }
+        });
+    })
 
     // handle input change
     const handleInputChange = (e, index) => {
@@ -39,39 +59,46 @@ function AddMapping() {
             body: JSON.stringify(PostBody)
         }).then(response => {
             if (response.ok) {
-                alert("Mappings added")
+                setMessage('Company Codes added!');
             }
             else {
-                alert("Mappings not added");
+                setMessage('Company Codes not added');
             }
         })
     }
 
     const handleCompany = (event) => {
-        setCompany(event.target.value);
+        setCompany(event.value);
     }
 
     return (
         <div>
-            <form onSubmit={handleSubmit}>
-                <div className="input-group mb-3">
-                    <input type="text" onChange={handleCompany} className="form-control" placeholder="Company Name" id="name" required />
-                </div>
+            <form className="col-sm-4" onSubmit={handleSubmit}>
+                <Select
+                    options={companyList}
+                    placeholder="Choose company"
+                    className="col-sm-6 mb-3"
+                    onChange={handleCompany}
+                ></Select>
                 {inputList.map((x, i) => {
                     return (
-                        <div key={i}>
+                        <div className="row" key={i}>
                             <div>
                                 <input
                                     name="exchange"
                                     placeholder="Stock Exchange Code"
                                     value={x.exchange}
                                     onChange={e => handleInputChange(e, i)}
+                                    className="form-control"
+                                    required
                                 />
                                 <input
                                     name="code"
                                     placeholder="Company Code"
                                     value={x.code}
                                     onChange={e => handleInputChange(e, i)}
+                                    className="form-control"
+                                    required
                                 />
                                 <div className="btn-box">
                                     {inputList.length !== 1 && <button
@@ -83,7 +110,9 @@ function AddMapping() {
                         </div>
                     );
                 })}
-                <input type="submit"></input>
+                <input type="submit" value="Submit details" className="btn btn-primary"></input>
+                <br/><br/>
+                {message}
             </form>
         </div>
     );

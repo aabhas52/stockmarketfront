@@ -9,7 +9,8 @@ class AddStockExchange extends Component{
             code: null,
             brief: null,
             address: null,
-            remarks: null
+            remarks: null,
+            message: null
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -21,7 +22,6 @@ class AddStockExchange extends Component{
 
     handleSubmit(event){
         event.preventDefault();
-        // console.log(this.state);
         const ExchangeJson = {
             "stockExchangeName": this.state.name,
             "stockExchangeCode": this.state.code,
@@ -38,16 +38,16 @@ class AddStockExchange extends Component{
             body: JSON.stringify(ExchangeJson)
         }).then(response => {
             if(response.ok){
-                alert('Exchange Added');
+                this.setState({message: 'Exchange Added!'});
             }
             else{
-                alert('Exchange Not Added')
+                this.setState({message: 'Exchange Not Added'});
             }
         })
     }
 
     render() {
-        return <form onSubmit={this.handleSubmit}>
+        return <form className="col-sm-4" onSubmit={this.handleSubmit}>
             <div className="input-group mb-3">
                 <input type="text" onChange={this.handleChange} className="form-control" placeholder="Stock Exchange Name" id="name" required/>
             </div>
@@ -64,8 +64,10 @@ class AddStockExchange extends Component{
                 <input type="text" onChange={this.handleChange} className="form-control" placeholder="Remarks" id="remarks"/>
             </div>
             <div className="input-group-mb-3">
-                <input type="submit"/>
+                <input type="submit" value="Submit details" className="btn btn-primary"/>
             </div>
+            <br/><br/>
+            {this.state.message}
         </form>
     }
 
