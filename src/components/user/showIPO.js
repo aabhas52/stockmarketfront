@@ -22,6 +22,7 @@ class ShowIPO extends Component {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
             },
         },
         ).then(response => {
@@ -56,7 +57,8 @@ class ShowIPO extends Component {
             method: 'GET',
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
             }
         }).then(response => {
             if (response.ok) {
@@ -77,7 +79,7 @@ class ShowIPO extends Component {
                     <Select
                         options={this.state.companyList}
                         placeholder="Find by company"
-                        className="col-sm-6 mb-3"
+                        className="mb-3"
                         onChange={this.handleCompany}
                     ></Select>
                     <div className="input-group-mb-3">

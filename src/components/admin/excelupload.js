@@ -34,7 +34,8 @@ class ExcelUpload extends Component{
                             method: 'POST',
                             mode: 'cors',
                             headers: {
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
                             },
                             body: JSON.stringify(Prices)
                         }).then(response => {
@@ -69,6 +70,7 @@ class ExcelUpload extends Component{
         return <div className="col-sm-12">
             <input type="file" onChange={this.onFileChange}></input>
             <button className="btn btn-dark" onClick={this.onFileUpload}>Upload</button>
+            <br/><br/>
             {this.state.result}
         </div>
     }

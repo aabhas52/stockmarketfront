@@ -33,22 +33,31 @@ class Login extends Component {
             "username": this.state.username,
             "password": this.state.password
         };
-        fetch("http://localhost:8080/loginUser", {
+        fetch("http://localhost:8080/authenticate", {
             method: 'POST',
-            mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
+            'Access-Control-Allow-Origin': '*',
+            'Vary': 'Origin'.replace,
+            'Accept': 'application/json',
             body: JSON.stringify(UserJson)
         }).then(response => {
             if (response.ok) {
-                response.text().then(userRole => {
+                response.json().then(json => {
                     this.setState({
-                        role: userRole,
+                        role: json.role,
                         login: true
                     });
-                    window.sessionStorage.setItem("role", userRole);
+                    window.sessionStorage.setItem("role", json.role);
+                    window.sessionStorage.setItem("token", json.token);
+                    window.sessionStorage.setItem("username", json.username);
+                    window.sessionStorage.setItem("password", json.password);
+                    window.sessionStorage.setItem("id", json.id);
                 });
+            }
+            else if(response.status === 401){
+                this.setState({error: 'User does not exist'})
             }
             else {
                 response.text().then(message => {
@@ -71,10 +80,10 @@ class Login extends Component {
                     <input type="password" onChange={this.handleChange} className="form-control" placeholder="Password" id="password" required />
                 </div>
                 <div className="input-group-mb-3">
-                    <input type="submit" value="Login" className="btn btn-primary"/>
+                    <input type="submit" value="Login" className="btn btn-primary" />
                 </div>
             </form>
-            <br/><br/>
+            <br /><br />
             <Link to="/newUser">Create new user</Link>
         </div>
     }
@@ -84,7 +93,7 @@ class Login extends Component {
             return <div>
                 <Switch>
                     <Route exact path="/newUser" component={NewUser}></Route>
-                    <Route render={this.loginPage}/>
+                    <Route render={this.loginPage} />
                 </Switch>
             </div>
         }

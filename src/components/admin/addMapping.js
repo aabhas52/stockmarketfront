@@ -54,7 +54,8 @@ function AddMapping() {
             method: 'POST',
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
             },
             body: JSON.stringify(PostBody)
         }).then(response => {

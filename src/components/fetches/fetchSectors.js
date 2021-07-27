@@ -4,7 +4,8 @@ function FetchSectors() {
         mode: 'cors',
         method: 'GET',
         headers: {
-            Accept: 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
         },
     });
     return response;

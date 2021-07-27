@@ -15,6 +15,7 @@ import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
 import 'react-dropdown/style.css';
 import Select from 'react-select';
 import FetchSector from '../components/fetches/fetchSectors';
+import Statistics from './statistics';
 
 // Step 6 - Adding the chart and theme as dependency to the core fusioncharts
 ReactFC.fcRoot(FusionCharts, Column2D, FusionTheme);
@@ -28,11 +29,14 @@ class SectorPeriod extends Component {
             sectorList: null,
             sector: null,
             start: null,
-            end: null
+            end: null,
+            type: 'column2d'
+            
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleSector = this.handleSector.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.onChangeType = this.onChangeType.bind(this);
     }
 
     componentDidMount() {
@@ -69,7 +73,8 @@ class SectorPeriod extends Component {
             method: 'POST',
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
             },
             body: JSON.stringify(BodyJson)
         }).then(response => {
@@ -83,6 +88,10 @@ class SectorPeriod extends Component {
                 })
             }
         });
+    }
+
+    onChangeType(event) {
+        this.setState({ type: event.target.value });
     }
 
     render() {
@@ -112,7 +121,8 @@ class SectorPeriod extends Component {
         }
         else if(this.state.chartData.length !== 0){
             const configs = {
-                type: "column2d", // The chart type
+                exportEnabled: 1,
+                type: this.state.type, // The chart type
                 width: "700", // Width of the chart
                 height: "400", // Height of the chart
                 dataFormat: "json", // Data type
@@ -121,17 +131,37 @@ class SectorPeriod extends Component {
                     chart: {
                         caption: this.state.sector + " Prices between "+ this.state.start + " and " + this.state.end,    //Set the chart caption
                         subCaption: "",             //Set the chart subcaption
-                        xAxisName: "Time",           //Set the x-axis name
+                        xAxisName: "Date",           //Set the x-axis name
                         yAxisName: "Prices (in INR)",  //Set the y-axis name
                         theme: "fusion"                 //Set the theme for your chart
                     },
                     // Chart Data - from step 2
                     data: this.state.chartData
                 }
-            }
+            };
+            const stats = Statistics(this.state.chartData);
             return <div>
                 {formElement}
-                <ReactFC {...configs} />
+                <br/>
+                Choose chart type:
+                <div onChange={this.onChangeType}>
+                    <input type="radio" value="column2d" name="type" defaultChecked/> Column
+                    <br/>
+                    <input type="radio" value="line" name="type" /> Line
+                </div>
+                <br/>
+                <div className="row">
+                    <ReactFC {...configs} className="col-sm-6" />
+                    <div className="col-sm-4 card">
+                        <h3 className="card-title">Chart statistics</h3> <br />
+                        <div className="card-body">
+                            Number of records: {stats.count} <br />
+                            Average price: {stats.avg} <br />
+                            Maximum price: {stats.max} <br />
+                            Minimum price: {stats.min} <br />
+                        </div>
+                    </div>
+                </div>
             </div>;
         }
         else{

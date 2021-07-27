@@ -8,6 +8,8 @@ import ShowSectors from "./showSectors";
 import CompanyPeriod from "../../charts/companyPeriod"
 import SectorPeriod from "../../charts/sectorPeriod";
 import CompanyVsSector from "../../charts/companyVsSector";
+import ShowCompanies from "./showCompanies";
+import EditProfile from "./editProfile";
 
 
 class UserNavbar extends Component {
@@ -19,7 +21,11 @@ class UserNavbar extends Component {
 
     logout(event) {
         event.preventDefault();
+        window.sessionStorage.removeItem("token");
         window.sessionStorage.removeItem("role");
+        window.sessionStorage.removeItem("username");
+        window.sessionStorage.removeItem("password");
+        window.sessionStorage.removeItem("id");
         window.location.reload();
         window.location.assign("/");
     }
@@ -29,6 +35,9 @@ class UserNavbar extends Component {
             <Navbar bg="dark">
                 <NavItem className="mx-3">
                     <Link to="/user/ipos">IPOs</Link>
+                </NavItem>
+                <NavItem className="mx-3">
+                    <Link to="/user/allCompanies">View companies</Link>
                 </NavItem>
                 <NavItem className="mx-3">
                     <Link to="/user/companyPrices">Company Prices</Link>
@@ -46,7 +55,10 @@ class UserNavbar extends Component {
                     <Link to="/user/sectorCompare">Compare Sectors</Link>
                 </NavItem>
                 <NavItem className="mx-3">
-                    <Link to="/user/companyVsSector">Compare company and sector</Link>
+                    <Link to="/user/companyVsSector">Compare Company and Sector</Link>
+                </NavItem>
+                <NavItem className="mx-3">
+                    <Link to="/user/editUser">Edit Profile</Link>
                 </NavItem>
                 <NavItem className="ms-auto">
                     <button className="btn btn-primary" onClick={this.logout}>
@@ -75,6 +87,12 @@ class UserNavbar extends Component {
                 </Route>
                 <Route exact path="/user/companyVsSector">
                     <CompanyVsSector />
+                </Route>
+                <Route exact path="/user/allCompanies">
+                    <ShowCompanies />
+                </Route>
+                <Route exact path="/user/editUser">
+                    <EditProfile />
                 </Route>
             </Switch>
         </div>

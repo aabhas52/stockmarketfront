@@ -59,7 +59,8 @@ class AddCompany extends Component {
             method: 'POST',
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
             },
             body: JSON.stringify(CompanyJson)
         }).then(response => {

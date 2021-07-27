@@ -79,7 +79,8 @@ class AddIPO extends Component {
             method: 'POST',
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
             },
             body: JSON.stringify(IPOJson)
         }).then(response => {
@@ -95,13 +96,13 @@ class AddIPO extends Component {
                 <Select
                     options={this.state.companyList}
                     placeholder="Choose company"
-                    className="col-sm-6 mb-3"
+                    className="mb-3"
                     onChange={this.handleCompany}
                 ></Select>
                 <Select
                     options={this.state.exchangeList}
                     placeholder="Choose stock exchange"
-                    className="col-sm-6 mb-3"
+                    className="mb-3"
                     onChange={this.handleExchange}
                 ></Select>
                 <div className="mb-3">

@@ -29,7 +29,7 @@ class NewUser extends Component{
             "email": this.state.email,
             "phone": this.state.phone
         };
-        fetch("http://localhost:8080/setuserapi", {
+        fetch("http://localhost:8080/register", {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -58,7 +58,7 @@ class NewUser extends Component{
                 <input type="email" onChange={this.onChange} className="form-control" placeholder="Email" id="email" required/>
             </div>
             <div className="input-group mb-3">
-                <input type="tel" pattern="[0-9]{10}" onChange={this.onChange} className="form-control" placeholder="Phone" id="phone" required/>
+                <input type="tel" pattern="[0-9]{10}" onChange={this.onChange} className="form-control" placeholder="Phone" id="phone"/>
             </div>
             <div className="input-group-mb-3">
                 <input type="submit" value="Create user" className="btn btn-primary"/>

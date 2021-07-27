@@ -23,6 +23,7 @@ class ManageCompanies extends Component {
         this.handleSector = this.handleSector.bind(this);
         this.showMore = this.showMore.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.deactivate = this.deactivate.bind(this);
     }
 
     componentDidMount() {
@@ -40,7 +41,7 @@ class ManageCompanies extends Component {
                 response.json().then(json => {
                     let list = [];
                     json.map((sector, _key) => (
-                        list.push({ "label": sector['sectorName'], "value": sector['sectorName'] })
+                        list.push({ "label": sector['sectorName'], "value": sector })
                     ));
                     this.setState({ sectorList: list });
                 })
@@ -49,7 +50,7 @@ class ManageCompanies extends Component {
     }
 
     handleSector(event) {
-        this.setState({ sector: event.value });
+        this.setState({ currentCompany: {...this.state.currentCompany, sector: event.value} });
     }
 
     handleEdit(company) {
@@ -64,7 +65,8 @@ class ManageCompanies extends Component {
             method: 'POST',
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
             },
             body: JSON.stringify(this.state.currentCompany)
         });
@@ -87,7 +89,8 @@ class ManageCompanies extends Component {
             method: 'GET',
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
             }
         }).then(response => {
             if (response.ok) {
@@ -108,6 +111,17 @@ class ManageCompanies extends Component {
         this.setState({ showModal: false });
     }
 
+    deactivate(company){
+        fetch("http://localhost:8080/deactivateCompany/" + company.companyName, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+            }
+        });
+    }
+
     render() {
         let modalElement = <div></div>;
         if (this.state.modalInfo != null) {
@@ -117,13 +131,13 @@ class ManageCompanies extends Component {
                         <Modal.Title>{this.state.modalInfo.company.companyName}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <ul>
-                            <li>CEO: {this.state.modalInfo.company.ceo}</li>
-                            <li>Board of directors: {this.state.modalInfo.company.directors}</li>
-                            <li>Turnover (in INR): {this.state.modalInfo.company.turnover}</li>
-                            <li>Sector: {this.state.modalInfo.company.sector.sectorName}</li>
-                            <li>Brief: {this.state.modalInfo.company.writeup}</li>
-                            <li>Active in stock exchanges:
+                        <ul className="list-group">
+                            <li className="list-group-item">CEO: {this.state.modalInfo.company.ceo}</li>
+                            <li className="list-group-item">Board of directors: {this.state.modalInfo.company.directors}</li>
+                            <li className="list-group-item">Turnover (in INR): {this.state.modalInfo.company.turnover}</li>
+                            <li className="list-group-item">Sector: {this.state.modalInfo.company.sector.sectorName}</li>
+                            <li className="list-group-item">Brief: {this.state.modalInfo.company.writeup}</li>
+                            <li className="list-group-item">Active in stock exchanges:
                                 <ul>
                                     {this.state.modalInfo.exchanges.map((exchange, i) => (
                                         <li key={i}>
@@ -155,6 +169,7 @@ class ManageCompanies extends Component {
                             <th scope="col">Brief</th>
                             <th scope="col"></th>
                             <th scope="col"></th>
+                            <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -168,6 +183,9 @@ class ManageCompanies extends Component {
                                 </td>
                                 <td>
                                     <button className="col btn btn-primary" onClick={() => { this.handleEdit(company) }}>Edit</button>
+                                </td>
+                                <td>
+                                    <button className="col btn btn-primary" onClick={() => { this.deactivate(company) }} >Deactivate Company</button>
                                 </td>
                             </tr>
                         ))}

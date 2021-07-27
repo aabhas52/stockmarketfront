@@ -15,6 +15,7 @@ import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
 import 'react-dropdown/style.css';
 import Select from 'react-select';
 import FetchSectors from '../components/fetches/fetchSectors';
+import Statistics from './statistics';
 
 // Step 6 - Adding the chart and theme as dependency to the core fusioncharts
 ReactFC.fcRoot(FusionCharts, Column2D, FusionTheme);
@@ -32,12 +33,14 @@ class TwoSectors extends Component {
             start: null,
             end: null,
             pricedata1: [],
-            pricedata2: []
+            pricedata2: [],
+            type: 'mscolumn2d'
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handlesector1 = this.handlesector1.bind(this);
         this.handlesector2 = this.handlesector2.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.onChangeType = this.onChangeType.bind(this);
     }
 
     componentDidMount() {
@@ -83,7 +86,8 @@ class TwoSectors extends Component {
             method: 'POST',
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
             },
             body: JSON.stringify(SectorJson1)
         }).then(response => {
@@ -102,7 +106,8 @@ class TwoSectors extends Component {
             method: 'POST',
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
             },
             body: JSON.stringify(SectorJson2)
         }).then(response => {
@@ -117,6 +122,10 @@ class TwoSectors extends Component {
             }
         });
         this.setState({ loaded: true });
+    }
+
+    onChangeType(event) {
+        this.setState({ type: event.target.value });
     }
 
     render() {
@@ -142,7 +151,7 @@ class TwoSectors extends Component {
                 <input type="date" onChange={this.handleChange} className="form-control" placeholder="End date" id="end" />
             </div>
             <div className="input-group-mb-3">
-                <input type="submit" value="Submit query" className="btn btn-primary"/>
+                <input type="submit" value="Submit query" className="btn btn-primary" />
             </div>
         </form>
         if (!this.state.loaded) {
@@ -150,7 +159,8 @@ class TwoSectors extends Component {
         }
         else {
             const configs = {
-                type: "mscolumn2d", // The chart type
+                exportEnabled: 1,
+                type: this.state.type, // The chart type
                 width: "700", // Width of the chart
                 height: "400", // Height of the chart
                 dataFormat: "json", // Data type
@@ -159,7 +169,7 @@ class TwoSectors extends Component {
                     chart: {
                         caption: "Prices comparison between " + this.state.sector1 + " and " + this.state.sector2,    //Set the chart caption
                         subCaption: "",             //Set the chart subcaption
-                        xAxisName: "Time",           //Set the x-axis name
+                        xAxisName: "Date",           //Set the x-axis name
                         yAxisName: "Prices (in INR)",  //Set the y-axis name
                         theme: "fusion"                 //Set the theme for your chart
                     },
@@ -174,9 +184,37 @@ class TwoSectors extends Component {
                     }]
                 }
             };
+            const stats1 = Statistics(this.state.pricedata1);
+            const stats2 = Statistics(this.state.pricedata2);
             return <div>
                 {formElement}
-                <ReactFC {...configs} />
+                <br />
+                Choose chart type:
+                <div onChange={this.onChangeType}>
+                    <input type="radio" value="mscolumn2d" name="type" defaultChecked /> Column
+                    <br />
+                    <input type="radio" value="msline" name="type" /> Line
+                </div>
+                <br />
+                <div className="row">
+                    <ReactFC {...configs} className="col-sm-6" />
+                    <div className="col-sm-4 card">
+                        <h3 className="card-title">Chart statistics</h3> <br />
+                        <div className="card-body">
+                            <h5>Series: {this.state.sector1} </h5>
+                            Number of records: {stats1.count} <br />
+                            Average price: {stats1.avg} <br />
+                            Maximum price: {stats1.max} <br />
+                            Minimum price: {stats1.min} <br />
+                            <br />
+                            <h5>Series: {this.state.sector2} </h5>
+                            Number of records: {stats2.count} <br />
+                            Average price: {stats2.avg} <br />
+                            Maximum price: {stats2.max} <br />
+                            Minimum price: {stats2.min} <br />
+                        </div>
+                    </div>
+                </div>
             </div>
         }
     }

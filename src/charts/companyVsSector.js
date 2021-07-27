@@ -16,6 +16,7 @@ import 'react-dropdown/style.css';
 import Select from 'react-select';
 import FetchSectors from '../components/fetches/fetchSectors';
 import FetchCompany from '../components/fetches/fetchCompany';
+import Statistics from './statistics';
 
 // Step 6 - Adding the chart and theme as dependency to the core fusioncharts
 ReactFC.fcRoot(FusionCharts, Column2D, FusionTheme);
@@ -34,12 +35,14 @@ class CompanyVsSector extends Component {
             start: null,
             end: null,
             pricedata1: [],
-            pricedata2: []
+            pricedata2: [],
+            type: 'mscolumn2d'
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handlecompany = this.handlecompany.bind(this);
         this.handlesector = this.handlesector.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.onChangeType = this.onChangeType.bind(this);
     }
 
     componentDidMount() {
@@ -81,6 +84,10 @@ class CompanyVsSector extends Component {
         this.setState({ [event.target.id]: event.target.value })
     }
 
+    onChangeType(event) {
+        this.setState({ type: event.target.value });
+    }
+
     handleSubmit(event) {
         event.preventDefault();
         const CompanyJson = {
@@ -92,7 +99,8 @@ class CompanyVsSector extends Component {
             method: 'POST',
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
             },
             body: JSON.stringify(CompanyJson)
         }).then(response => {
@@ -116,7 +124,8 @@ class CompanyVsSector extends Component {
             method: 'POST',
             mode: 'cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
             },
             body: JSON.stringify(SectorJson)
         }).then(response => {
@@ -164,16 +173,17 @@ class CompanyVsSector extends Component {
         }
         else {
             const configs = {
-                type: "mscolumn2d", // The chart type
+                type: this.state.type, // The chart type
                 width: "700", // Width of the chart
                 height: "400", // Height of the chart
                 dataFormat: "json", // Data type
                 // Chart Configuration
                 dataSource: {
                     chart: {
+                        exportEnabled: 1,
                         caption: "Prices comparison between " + this.state.company + " and " + this.state.sector,    //Set the chart caption
                         subCaption: "",             //Set the chart subcaption
-                        xAxisName: "Time",           //Set the x-axis name
+                        xAxisName: "Date",           //Set the x-axis name
                         yAxisName: "Prices (in INR)",  //Set the y-axis name
                         theme: "fusion"                 //Set the theme for your chart
                     },
@@ -188,9 +198,37 @@ class CompanyVsSector extends Component {
                     }]
                 }
             };
+            const stats1 = Statistics(this.state.pricedata1);
+            const stats2 = Statistics(this.state.pricedata2);
             return <div>
                 {formElement}
-                <ReactFC {...configs} />
+                <br />
+                Choose chart type:
+                <div onChange={this.onChangeType}>
+                    <input type="radio" value="mscolumn2d" name="type" defaultChecked /> Column
+                    <br />
+                    <input type="radio" value="msline" name="type" /> Line
+                </div>
+                <br />
+                <div className="row">
+                    <ReactFC {...configs} className="col-sm-6" />
+                    <div className="col-sm-4 card">
+                        <h3 className="card-title">Chart statistics</h3> <br />
+                        <div className="card-body">
+                            <h5>Series: {this.state.company} </h5>
+                            Number of records: {stats1.count} <br />
+                            Average price: {stats1.avg} <br />
+                            Maximum price: {stats1.max} <br />
+                            Minimum price: {stats1.min} <br />
+                            <br />
+                            <h5>Series: {this.state.sector} </h5>
+                            Number of records: {stats2.count} <br />
+                            Average price: {stats2.avg} <br />
+                            Maximum price: {stats2.max} <br />
+                            Minimum price: {stats2.min} <br />
+                        </div>
+                    </div>
+                </div>
             </div>
         }
     }

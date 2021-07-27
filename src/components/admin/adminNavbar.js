@@ -19,7 +19,11 @@ class AdminNavbar extends Component {
 
     logout(event) {
         event.preventDefault();
+        window.sessionStorage.removeItem("token");
         window.sessionStorage.removeItem("role");
+        window.sessionStorage.removeItem("username");
+        window.sessionStorage.removeItem("password");
+        window.sessionStorage.removeItem("id");
         window.location.reload();
         window.location.assign("/");
     }
