@@ -69,7 +69,7 @@ class SectorPeriod extends Component {
             "start": this.state.start,
             "end": this.state.end
         };
-        fetch("http://localhost:8080/sectorPrices", {
+        fetch("https://stock-market-back.herokuapp.com/sectorPrices", {
             method: 'POST',
             mode: 'cors',
             headers: {

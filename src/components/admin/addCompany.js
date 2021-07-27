@@ -55,7 +55,7 @@ class AddCompany extends Component {
             "sector": this.state.sector,
             "writeup": this.state.writeup
         };
-        fetch("http://localhost:8080/addCompany", {
+        fetch("https://stock-market-back.herokuapp.com/addCompany", {
             method: 'POST',
             mode: 'cors',
             headers: {

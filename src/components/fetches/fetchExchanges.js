@@ -1,6 +1,6 @@
 
 function FetchExchanges() {
-    const response = fetch('http://localhost:8080/allStockExchanges', {
+    const response = fetch('https://stock-market-back.herokuapp.com/allStockExchanges', {
         mode: 'cors',
         method: 'GET',
         headers: {

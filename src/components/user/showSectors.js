@@ -32,7 +32,7 @@ class ShowSectors extends Component {
             if (response.ok) {
                 response.json().then(sectorList => {
                     sectorList.map((sector, _key) => (
-                        fetch("http://localhost:8080/allCompanies/" + sector.sectorName, {
+                        fetch("https://stock-market-back.herokuapp.com/allCompanies/" + sector.sectorName, {
                             mode: 'cors',
                             method: 'GET',
                             headers: {

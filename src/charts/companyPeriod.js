@@ -68,7 +68,7 @@ class CompanyPeriod extends Component {
             "start": this.state.start,
             "end": this.state.end
         };
-        fetch("http://localhost:8080/findPricesBetweenDates", {
+        fetch("https://stock-market-back.herokuapp.com/findPricesBetweenDates", {
             method: 'POST',
             mode: 'cors',
             headers: {

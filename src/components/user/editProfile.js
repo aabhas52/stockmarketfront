@@ -26,7 +26,7 @@ class EditProfile extends Component{
             "password": this.state.password,
             "id": window.sessionStorage.getItem("id")
         };
-        fetch("http://localhost:8080/editUser", {
+        fetch("https://stock-market-back.herokuapp.com/editUser", {
             method: 'POST',
             mode: 'cors',
             headers: {

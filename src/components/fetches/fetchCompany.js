@@ -1,7 +1,7 @@
 
 function FetchCompany() {
 
-    const response = fetch('http://localhost:8080/allCompanies', {
+    const response = fetch('https://stock-market-back.herokuapp.com/allCompanies', {
         mode: 'cors',
         method: 'GET',
         headers: {

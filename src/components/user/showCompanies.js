@@ -37,7 +37,7 @@ class ShowCompanies extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        fetch("http://localhost:8080/findCompany/" + this.state.company, {
+        fetch("https://stock-market-back.herokuapp.com/findCompany/" + this.state.company, {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -51,7 +51,7 @@ class ShowCompanies extends Component {
                 });
             }
         });
-        fetch("http://localhost:8080/exchangesToCompany/" + this.state.company, {
+        fetch("https://stock-market-back.herokuapp.com/exchangesToCompany/" + this.state.company, {
             method: 'GET',
             mode: 'cors',
             headers: {

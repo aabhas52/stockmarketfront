@@ -29,7 +29,7 @@ class NewUser extends Component{
             "email": this.state.email,
             "phone": this.state.phone
         };
-        fetch("http://localhost:8080/register", {
+        fetch("https://stock-market-back.herokuapp.com/register", {
             method: 'POST',
             mode: 'cors',
             headers: {

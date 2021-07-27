@@ -29,7 +29,7 @@ class AddStockExchange extends Component{
             "contactAddress": this.state.address,
             "remarks": this.state.remarks
         };
-        fetch("http://localhost:8080/addStockExchange", {
+        fetch("https://stock-market-back.herokuapp.com/addStockExchange", {
             method: 'POST',
             mode: 'cors',
             headers: {

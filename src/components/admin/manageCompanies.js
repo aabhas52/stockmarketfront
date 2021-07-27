@@ -61,7 +61,7 @@ class ManageCompanies extends Component {
     }
 
     completeEdit() {
-        fetch("http://localhost:8080/editCompany", {
+        fetch("https://stock-market-back.herokuapp.com/editCompany", {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -85,7 +85,7 @@ class ManageCompanies extends Component {
     }
 
     showMore(company) {
-        fetch("http://localhost:8080/exchangesToCompany/" + company.companyName, {
+        fetch("https://stock-market-back.herokuapp.com/exchangesToCompany/" + company.companyName, {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -112,7 +112,7 @@ class ManageCompanies extends Component {
     }
 
     deactivate(company){
-        fetch("http://localhost:8080/deactivateCompany/" + company.companyName, {
+        fetch("https://stock-market-back.herokuapp.com/deactivateCompany/" + company.companyName, {
             method: 'GET',
             mode: 'cors',
             headers: {

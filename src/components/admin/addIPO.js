@@ -75,7 +75,7 @@ class AddIPO extends Component {
             "date": this.state.date,
             "time": this.state.time
         };
-        fetch("http://localhost:8080/editIpo", {
+        fetch("https://stock-market-back.herokuapp.com/editIpo", {
             method: 'POST',
             mode: 'cors',
             headers: {

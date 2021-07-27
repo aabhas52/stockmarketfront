@@ -50,7 +50,7 @@ function AddMapping() {
             "company_name": company,
             "company_codes": inputList
         }
-        fetch("http://localhost:8080/mapStockExchanges", {
+        fetch("https://stock-market-back.herokuapp.com/mapStockExchanges", {
             method: 'POST',
             mode: 'cors',
             headers: {

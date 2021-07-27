@@ -33,7 +33,7 @@ class Login extends Component {
             "username": this.state.username,
             "password": this.state.password
         };
-        fetch("http://localhost:8080/authenticate", {
+        fetch("https://stock-market-back.herokuapp.com/authenticate", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

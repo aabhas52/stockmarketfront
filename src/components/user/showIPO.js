@@ -17,7 +17,7 @@ class ShowIPO extends Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:8080/allIPOs', {
+        fetch('https://stock-market-back.herokuapp.com/allIPOs', {
             mode: 'cors',
             method: 'GET',
             headers: {
@@ -53,7 +53,7 @@ class ShowIPO extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        fetch("http://localhost:8080/companyIpo/" + this.state.company, {
+        fetch("https://stock-market-back.herokuapp.com/companyIpo/" + this.state.company, {
             method: 'GET',
             mode: 'cors',
             headers: {

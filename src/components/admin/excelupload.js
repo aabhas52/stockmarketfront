@@ -30,7 +30,7 @@ class ExcelUpload extends Component{
                             };
                             Prices.push(priceJson);
                         });
-                        fetch("http://localhost:8080/addStockPriceByCode", {
+                        fetch("https://stock-market-back.herokuapp.com/addStockPriceByCode", {
                             method: 'POST',
                             mode: 'cors',
                             headers: {
