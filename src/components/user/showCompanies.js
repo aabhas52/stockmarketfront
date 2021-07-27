@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import FetchCompanies from '../fetches/fetchCompany';
-import Select from 'react-select';
+import { Modal } from 'react-bootstrap';
 
 class ShowCompanies extends Component {
 
@@ -10,34 +9,23 @@ class ShowCompanies extends Component {
             companyList: null,
             company: null,
             companyDetails: null,
-            exchanges: null
+            exchanges: null,
+            modalInfo: null,
+            showModal: false
         }
+        this.showMore = this.showMore.bind(this);
         this.handleCompany = this.handleCompany.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    componentDidMount() {
-        const call = FetchCompanies();
-        call.then(response => {
-            if (response.ok) {
-                response.json().then(json => {
-                    let list = [];
-                    json.map((company, _key) => (
-                        list.push({ "label": company['companyName'], "value": company['companyName'] })
-                    ));
-                    this.setState({ companyList: list });
-                });
-            }
-        });
+        this.handleClose = this.handleClose.bind(this);
     }
 
     handleCompany(event) {
-        this.setState({ company: event.value });
+        this.setState({ company: event.target.value });
     }
 
     handleSubmit(event) {
         event.preventDefault();
-        fetch("https://stock-market-back.herokuapp.com/findCompany/" + this.state.company, {
+        fetch("https://stock-market-back.herokuapp.com/findMatchingCompany/" + this.state.company, {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -47,76 +35,114 @@ class ShowCompanies extends Component {
         }).then(response => {
             if (response.ok) {
                 response.json().then(json => {
-                    this.setState({ companyDetails: json });
+                    this.setState({ companyList: json });
                 });
-            }
-        });
-        fetch("https://stock-market-back.herokuapp.com/exchangesToCompany/" + this.state.company, {
-            method: 'GET',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
-            }
-        }).then(response => {
-            if (response.ok) {
-                response.json().then(json => {
-                    this.setState({ exchanges: json }
-                    );
-                })
             }
         });
     }
 
-    render() {
-        if (this.state.companyList !== null) {
-            let companyInfo = <div></div>;
-            if (this.state.companyDetails != null && this.state.exchanges != null) {
-                companyInfo = <ul className="list-group">
-                    <li className="list-group-item">CEO: {this.state.companyDetails.company.ceo}</li>
-                    <li className="list-group-item">Board of directors: {this.state.companyDetails.company.directors}</li>
-                    <li className="list-group-item">Turnover (in INR): {this.state.companyDetails.company.turnover}</li>
-                    <li className="list-group-item">Sector: {this.state.companyDetails.company.sector.sectorName}</li>
-                    <li className="list-group-item">Brief: {this.state.companyDetails.company.writeup}</li>
-                    <li className="list-group-item">Active in stock exchanges:
-                        <ul>
-                            {this.state.exchanges.map((exchange, i) => (
-                                <li key={i}>
-                                    {exchange.stockExchangeName}
-                                </li>
-                            ))}
-                        </ul>
-                    </li>
-                    <li className="list-group-item">
-                        Lastest price details:
-                        <ul>
-                            <li>Date: {this.state.companyDetails.price.date} </li>
-                            <li>Time: {this.state.companyDetails.price.time} </li>
-                            <li>Price per share (in INR): {this.state.companyDetails.price.currentPrice} </li>
-                            <li>Stock Exchange: {this.state.companyDetails.price.stockExchange.stockExchangeName} </li>
-                        </ul>
-                    </li>
-                </ul>
+    showMore(company) {
+        fetch("https://stock-market-back.herokuapp.com/exchangesToCompany/" + company.companyName, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
             }
-            return <form onSubmit={this.handleSubmit} className="col-sm-4">
-                <Select
-                    options={this.state.companyList}
-                    placeholder="Search for company"
-                    className="mb-3"
-                    onChange={this.handleCompany}
-                ></Select>
+        }).then(response => {
+            if (response.ok) {
+                response.json().then(json => {
+                    this.setState({
+                        modalInfo: {
+                            company: company,
+                            exchanges: json
+                        }
+                    });
+                })
+            }
+        });
+        this.setState({ showModal: true });
+    }
+
+    handleClose(){
+        this.setState({showModal: false});
+    }
+
+    render() {
+        let companyInfo = <div></div>;
+        if (this.state.companyList != null) {
+            companyInfo = (
+                <table className="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Company</th>
+                            <th scope="col">CEO</th>
+                            <th scope="col">Brief</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.state.companyList.map((company, i) => (
+                            <tr key={i}>
+                                <td>{company['companyName']}</td>
+                                <td>{company['ceo']}</td>
+                                <td>{company['writeup']}</td>
+                                <td>
+                                    <button className="col btn btn-primary" onClick={() => { this.showMore(company) }} >View more</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>);
+        }
+        let modalElement = <div></div>;
+        if (this.state.modalInfo != null) {
+            modalElement = (
+                <Modal className="modal-fade" show={this.state.showModal} onHide={this.handleClose}>
+                    <Modal.Header>
+                        <Modal.Title>{this.state.modalInfo.company.companyName}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <ul className="list-group">
+                            <li className="list-group-item">CEO: {this.state.modalInfo.company.ceo}</li>
+                            <li className="list-group-item">Board of directors: {this.state.modalInfo.company.directors}</li>
+                            <li className="list-group-item">Turnover (in INR): {this.state.modalInfo.company.turnover}</li>
+                            <li className="list-group-item">Sector: {this.state.modalInfo.company.sector.sectorName}</li>
+                            <li className="list-group-item">Brief: {this.state.modalInfo.company.writeup}</li>
+                            <li className="list-group-item">Active in stock exchanges:
+                                <ul>
+                                    {this.state.modalInfo.exchanges.map((exchange, i) => (
+                                        <li key={i}>
+                                            {exchange.stockExchangeName}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </li>
+                        </ul>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <button className="btn btn-primary" onClick={this.handleClose}>
+                            Close
+                        </button>
+                    </Modal.Footer>
+                </Modal>
+            );
+        };
+        return <div>
+            <form onSubmit={this.handleSubmit} className="col-sm-4">
+                <div className="input-group mb-3">
+                    <input type="text" onChange={this.handleCompany} className="form-control" placeholder="Enter company name" id="companyName" required />
+                </div>
                 <div className="input-group-mb-3">
                     <input type="submit" value="Submit query" className="btn btn-primary" />
                 </div>
-                <br/><br/>
-                {companyInfo}
+                <br /><br />
             </form>
-        }
-        else{
-            return <div>
-                Fetching companies...
-            </div>
-        }
+            {companyInfo}
+            {modalElement}
+        </div>
     }
 
 }

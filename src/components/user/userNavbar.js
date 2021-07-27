@@ -37,7 +37,7 @@ class UserNavbar extends Component {
                     <Link to="/user/ipos">IPOs</Link>
                 </NavItem>
                 <NavItem className="mx-3">
-                    <Link to="/user/allCompanies">View companies</Link>
+                    <Link to="/user/allCompanies">Find companies</Link>
                 </NavItem>
                 <NavItem className="mx-3">
                     <Link to="/user/companyPrices">Company Prices</Link>
