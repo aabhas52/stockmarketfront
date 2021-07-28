@@ -15,7 +15,6 @@ class ShowCompanies extends Component {
         }
         this.showMore = this.showMore.bind(this);
         this.handleCompany = this.handleCompany.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClose = this.handleClose.bind(this);
     }
 
