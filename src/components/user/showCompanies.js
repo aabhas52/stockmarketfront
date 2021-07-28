@@ -20,25 +20,23 @@ class ShowCompanies extends Component {
     }
 
     handleCompany(event) {
-        this.setState({ company: event.target.value });
-    }
-
-    handleSubmit(event) {
-        event.preventDefault();
-        fetch("https://stock-market-back.herokuapp.com/findMatchingCompany/" + this.state.company, {
-            method: 'GET',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
-            }
-        }).then(response => {
-            if (response.ok) {
-                response.json().then(json => {
-                    this.setState({ companyList: json });
-                });
-            }
-        });
+        const company = event.target.value;
+        if (company.length > 1) {
+            fetch("https://stock-market-back.herokuapp.com/findMatchingCompany/" + company, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+                }
+            }).then(response => {
+                if (response.ok) {
+                    response.json().then(json => {
+                        this.setState({ companyList: json });
+                    });
+                }
+            });
+        }
     }
 
     showMore(company) {
@@ -64,8 +62,8 @@ class ShowCompanies extends Component {
         this.setState({ showModal: true });
     }
 
-    handleClose(){
-        this.setState({showModal: false});
+    handleClose() {
+        this.setState({ showModal: false });
     }
 
     render() {
@@ -131,12 +129,9 @@ class ShowCompanies extends Component {
             );
         };
         return <div>
-            <form onSubmit={this.handleSubmit} className="col-sm-4">
+            <form className="col-sm-4">
                 <div className="input-group mb-3">
                     <input type="text" onChange={this.handleCompany} className="form-control" placeholder="Enter company name" id="companyName" required />
-                </div>
-                <div className="input-group-mb-3">
-                    <input type="submit" value="Submit query" className="btn btn-primary" />
                 </div>
                 <br /><br />
             </form>
