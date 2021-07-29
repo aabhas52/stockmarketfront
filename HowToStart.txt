@@ -1,0 +1,8 @@
+Steps on how to start application:
+
+1. Go to https://stock-market-front.herokuapp.com/
+2. Login page will appear.
+3. To login as admin,
+    username: admin
+    password: admin
+4. Predefined user with username user and password user.
