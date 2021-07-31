@@ -10,6 +10,7 @@ class ShowCompanies extends Component {
             company: null,
             companyDetails: null,
             exchanges: null,
+            companyInfo: null,
             modalInfo: null,
             showModal: false
         }
@@ -50,9 +51,43 @@ class ShowCompanies extends Component {
             if (response.ok) {
                 response.json().then(json => {
                     this.setState({
-                        modalInfo: {
+                        companyInfo: {
                             company: company,
                             exchanges: json
+                        }
+                    });
+                })
+            }
+        });
+        fetch("https://stock-market-back.herokuapp.com/findLatestPrice/" + company.companyName, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+            }
+        }).then(response => {
+            if (response.status === 204) {
+                this.setState({
+                    modalInfo: {
+                        ...this.state.companyInfo,
+                        price: {
+                            stockExchange: {
+                                stockExchangeName: 'Not Available'
+                            },
+                            currentPrice: 'Not Available',
+                            date: 'Not Available',
+                            time: 'Not Available'
+                        }
+                    }
+                });
+            }
+            else if (response.ok) {
+                response.json().then(json => {
+                    this.setState({
+                        modalInfo: {
+                            ...this.state.companyInfo,
+                            price: json
                         }
                     });
                 })
@@ -115,6 +150,14 @@ class ShowCompanies extends Component {
                                             {exchange.stockExchangeName}
                                         </li>
                                     ))}
+                                </ul>
+                            </li>
+                            <li className="list-group-item">Latest Price:
+                                <ul>
+                                    <li>Stock Exchange: {this.state.modalInfo.price.stockExchange.stockExchangeName}</li>
+                                    <li>Price (in INR): {this.state.modalInfo.price.currentPrice}</li>
+                                    <li>Date: {this.state.modalInfo.price.date}</li>
+                                    <li>Time: {this.state.modalInfo.price.time}</li>
                                 </ul>
                             </li>
                         </ul>
